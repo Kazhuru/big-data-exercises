@@ -17,7 +17,7 @@ public class MovieRecommenderTest {
         // http://snap.stanford.edu/data/web-Movies.html
         MovieRecommender recommender = new MovieRecommender("/Users/csuarez/Downloads/movies.txt.gz");
 
-        /*
+        
         assertEquals(7911684, recommender.getTotalReviews()); 
         assertEquals(253059, recommender.getTotalProducts()); 
         assertEquals(889176, recommender.getTotalUsers());
@@ -25,7 +25,7 @@ public class MovieRecommenderTest {
         List<String> recommendations = recommender.getRecommendationsForUser("A141HP4LYPWMSR");
         assertThat(recommendations, hasItem("B0002O7Y8U"));
         assertThat(recommendations, hasItem("B00004CQTF"));
-        assertThat(recommendations, hasItem("B000063W82")); */
+        assertThat(recommendations, hasItem("B000063W82")); 
          
     }
 
