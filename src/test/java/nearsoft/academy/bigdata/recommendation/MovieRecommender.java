@@ -68,7 +68,7 @@ public class MovieRecommender {
     }
 
     private String createCSVFile(String in_path) throws IOException, TasteException {
-        //File Creation
+
         File csv = new File("movies.csv");
         if (!csv.exists())
         {
@@ -76,7 +76,7 @@ public class MovieRecommender {
             FileInputStream fileInput = new FileInputStream(path);
             GZIPInputStream gzis = new GZIPInputStream(fileInput);
             FileOutputStream fileOutput = new FileOutputStream(csv);
-            //file decompress process.
+
             byte[] buffer = new byte[1024];
             int length;
             while ((length = gzis.read(buffer)) > 0) 
@@ -102,10 +102,10 @@ public class MovieRecommender {
             String writerString = "";
             long userCount = 0;
             int moviesCount = 0;
-
-            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+            String line = reader.readLine();
+            while (line != null) {
                 String dataLine;
-                if(line.startsWith(("product/productId"))) //prodID
+                if(line.startsWith(("product/productId")))
                 {
                     dataLine = line.split(" ")[1];
                     if(!movies.containsKey(dataLine))
@@ -118,7 +118,7 @@ public class MovieRecommender {
                     else
                         writerString = (movies.get(dataLine) + ",");  
                 }
-                else if(line.startsWith(("review/userId")))  //userID
+                else if(line.startsWith(("review/userId")))
                 {
                     dataLine = line.split(" ")[1];
                     if(!users.containsKey(dataLine))
@@ -137,6 +137,7 @@ public class MovieRecommender {
                     writerString += reviewScore + "\n";
                     fileWriter.write(writerString);
                 }
+                line = reader.readLine();
             }
             fileWriter.close();
             fileOutput.close();
