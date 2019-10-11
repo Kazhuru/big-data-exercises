@@ -33,14 +33,12 @@ public class MovieRecommender {
     private UserBasedRecommender recommender;
     BiMap<String, Long> users;
     BiMap<String, Integer> movies;
-    BiMap<Integer, String> invertedMovies; 
     private int totalReviews;
 
     public MovieRecommender(String in_path) throws IOException, TasteException   { 
         path = in_path;
         users = HashBiMap.create();
         movies = HashBiMap.create();
-        invertedMovies = HashBiMap.create();
         totalReviews = 0; 
 
         csvPath = createCSVFile(path);
@@ -54,8 +52,9 @@ public class MovieRecommender {
         DataModel model = new FileDataModel(new File(dataFileM));
         UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
         UserNeighborhood neighborhood = new ThresholdUserNeighborhood(0.1, similarity, model);
-        recommender = new GenericUserBasedRecommender(model, neighborhood, similarity); 
+        recommender = new GenericUserBasedRecommender(model, neighborhood, similarity);
 
+        BiMap<Integer, String> invertedMovies = movies.inverse();
         List<RecommendedItem> recommendations = recommender.recommend(indexUser, 3);
 
         for (RecommendedItem recommendation : recommendations) {
@@ -70,22 +69,23 @@ public class MovieRecommender {
     private String createCSVFile(String in_path) throws IOException, TasteException {
 
         File csv = new File("movies.csv");
-        if (!csv.exists())
-        {
-            csv.createNewFile();
-            FileInputStream fileInput = new FileInputStream(path);
-            GZIPInputStream gzis = new GZIPInputStream(fileInput);
-            FileOutputStream fileOutput = new FileOutputStream(csv);
+        if (csv.exists())
+            csv.delete();
 
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = gzis.read(buffer)) > 0) 
-                fileOutput.write(buffer, 0, length);
+        csv.createNewFile();
+        FileInputStream fileInput = new FileInputStream(path);
+        GZIPInputStream gzis = new GZIPInputStream(fileInput);
+        FileOutputStream fileOutput = new FileOutputStream(csv);
 
-            fileInput.close();
-            gzis.close();
-            fileOutput.close();
-        }
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = gzis.read(buffer)) > 0) 
+            fileOutput.write(buffer, 0, length);
+
+        fileInput.close();
+        gzis.close();
+        fileOutput.close();
+        
         return csv.getAbsolutePath();
     }
     
@@ -111,7 +111,6 @@ public class MovieRecommender {
                     if(!movies.containsKey(dataLine))
                     {
                         movies.put(dataLine, moviesCount);
-                        invertedMovies.put(moviesCount,dataLine);
                         writerString = moviesCount + ",";
                         moviesCount++;
                     }
